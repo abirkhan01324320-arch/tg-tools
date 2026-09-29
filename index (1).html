@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>সহজ টুলস – ফ্রি বাংলা অনলাইন টুলস</title>
+<meta name="description" content="ফ্রি বাংলা অনলাইন টুলস: চাকরির বয়স হিসাব, পাসপোর্ট ছবি রিসাইজ ও KB কমানো, ছবি থেকে PDF, PDF মার্জ এবং লোন EMI ক্যালকুলেটর।">
+<script async src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--g:#0b6b4f;--g2:#e6f3ee;--ink:#1c2420;--mute:#5d6b64;--line:#d9e2dd;--bg:#f6f8f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans Bengali","Nirmala UI","Siyam Rupali",Kalpurush,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header .wrap{padding:18px 16px}
+h1{margin:0;font-size:1.5rem}
+header p{margin:2px 0 0;color:var(--mute);font-size:.95rem}
+nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:18px 0}
+nav button{font:inherit;font-size:.92rem;padding:10px 6px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;color:var(--ink)}
+nav button[aria-selected=true]{background:var(--g);border-color:var(--g);color:#fff;font-weight:700}
+section{display:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px}
+section.on{display:block}
+h2{margin:0 0 4px;font-size:1.2rem}
+.sub{margin:0 0 16px;color:var(--mute);font-size:.93rem}
+label{display:block;font-weight:500;margin:12px 0 4px;font-size:.95rem}
+input,select{font:inherit;width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{font:inherit;font-weight:700;background:var(--g);color:#fff;border:0;border-radius:8px;padding:11px 20px;margin-top:16px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.alt{background:var(--g2);color:var(--g)}
+.out{margin-top:16px;padding:14px;background:var(--g2);border-radius:8px;display:none}
+.out.on{display:block}
+.big{font-size:1.35rem;font-weight:700;color:var(--g)}
+.kv{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #cfe3da;padding:6px 0}
+.kv:last-child{border:0}
+.note{font-size:.85rem;color:var(--mute);margin-top:8px}
+.err{color:#b3261e}
+ul.files{padding-left:20px;margin:8px 0 0;font-size:.9rem}
+img.prev{max-width:100%;max-height:260px;margin-top:10px;border:1px solid var(--line);border-radius:6px}
+#tgbar{display:none;background:#fff4d6;border-bottom:1px solid #ecd48a;padding:10px 16px;text-align:center;font-size:.92rem}
+#tgbar button{font:inherit;font-weight:700;margin-top:6px;background:var(--g);color:#fff;border:0;border-radius:8px;padding:8px 16px;cursor:pointer}
+#tgbar.mini{background:#e6f3ee;border-color:#b9dccd}
+#toast{display:none;position:fixed;left:12px;right:12px;bottom:16px;z-index:9;background:#1c2420;color:#fff;padding:12px 14px;border-radius:10px;text-align:center;font-size:.95rem}
+footer{text-align:center;color:var(--mute);font-size:.85rem;padding:26px 16px 40px}
+.tg{margin:22px 0 0;text-align:center}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+textarea{font:inherit;width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;min-height:80px;resize:vertical}
+textarea:focus{outline:2px solid var(--g);outline-offset:1px}
+h3{font-size:1.02rem;margin:22px 0 0;color:var(--g)}
+@media(max-width:520px){.row{grid-template-columns:1fr}nav{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="tgbar">টেলিগ্রামের ভেতরের ব্রাউজারে ফাইল ডাউনলোড আটকে যায়। ছবি বা PDF নামাতে ফোনের ব্রাউজারে খুলুন।<br><button id="tgOpen">ব্রাউজারে খুলুন</button></div>
+<header><div class="wrap">
+<h1>সহজ টুলস</h1>
+<p>ফ্রি ও দ্রুত। আপনার ফাইল ব্রাউজারেই থাকে, কোনো সার্ভারে যায় না।</p>
+</div></header>
+
+<main class="wrap">
+<nav role="tablist">
+<button role="tab" data-t="age" aria-selected="true">বয়স হিসাব</button>
+<button role="tab" data-t="img" aria-selected="false">ছবি রিসাইজ</button>
+<button role="tab" data-t="stamp" aria-selected="false">ছবিতে নাম-তারিখ</button>
+<button role="tab" data-t="pdf" aria-selected="false">ছবি→PDF / মার্জ</button>
+<button role="tab" data-t="pdfc" aria-selected="false">PDF সাইজ কমান</button>
+<button role="tab" data-t="cv" aria-selected="false">CV বানান</button>
+<button role="tab" data-t="emi" aria-selected="false">EMI হিসাব</button>
+<button role="tab" data-t="land" aria-selected="false">জমির হিসাব</button>
+<button role="tab" data-t="words" aria-selected="false">টাকা কথায়</button>
+<button role="tab" data-t="qr" aria-selected="false">QR কোড</button>
+</nav>
+
+<!-- বয়স -->
+<section id="age" class="on">
+<h2>বয়স ক্যালকুলেটর</h2>
+<p class="sub">চাকরির আবেদনে নির্দিষ্ট তারিখে আপনার বয়স কত হবে তা দেখুন।</p>
+<div class="row">
+<div><label for="dob">জন্ম তারিখ</label><input type="date" id="dob"></div>
+<div><label for="asof">যে তারিখে বয়স জানতে চান</label><input type="date" id="asof"></div>
+</div>
+<button class="btn" id="ageBtn">বয়স হিসাব করুন</button>
+<div class="out" id="ageOut"></div>
+</section>
+
+<!-- ছবি -->
+<section id="img">
+<h2>ছবি রিসাইজ ও সাইজ (KB) কমানো</h2>
+<p class="sub">পাসপোর্ট, স্ট্যাম্প সাইজ বা স্বাক্ষরের ছবি আবেদনের মাপে বানান।</p>
+<label for="rzFile">ছবি বাছাই করুন</label>
+<input type="file" id="rzFile" accept="image/*">
+<div class="note" id="rzInfo"></div>
+<label for="preset">সাইজ বাছাই করুন</label>
+<select id="preset">
+<option value="300,300">স্ট্যাম্প সাইজ ছবি – ৩০০×৩০০ px</option>
+<option value="300,80">স্বাক্ষর – ৩০০×৮০ px</option>
+<option value="413,531">পাসপোর্ট সাইজ (৩৫×৪৫ মিমি) – ৪১৩×৫৩১ px</option>
+<option value="custom">নিজে লিখব</option>
+</select>
+<div class="row">
+<div><label for="rw">প্রস্থ (px)</label><input type="number" id="rw" min="10" value="300"></div>
+<div><label for="rh">উচ্চতা (px)</label><input type="number" id="rh" min="10" value="300"></div>
+</div>
+<label for="kb">সর্বোচ্চ ফাইল সাইজ (KB) – ফাঁকা রাখলে সাধারণ কোয়ালিটি</label>
+<input type="number" id="kb" min="5" placeholder="যেমন: 100">
+<button class="btn" id="rzBtn">ছবি তৈরি করুন</button>
+<div class="out" id="rzOut"></div>
+</section>
+
+<!-- PDF -->
+<section id="pdf">
+<h2>PDF টুলস</h2>
+<p class="sub">ছবি থেকে PDF বানান, অথবা একাধিক PDF এক ফাইলে জোড়া দিন।</p>
+<label for="i2p">১. ছবি থেকে PDF (একাধিক ছবি বাছাই করা যায়, বাছাইয়ের ক্রমে পেজ হবে)</label>
+<input type="file" id="i2p" accept="image/*" multiple>
+<ul class="files" id="i2pList"></ul>
+<button class="btn" id="i2pBtn">PDF বানান</button>
+<div class="out" id="i2pOut"></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:26px 0 6px">
+<label for="mg">২. PDF মার্জ (কমপক্ষে ২টি PDF বাছাই করুন)</label>
+<input type="file" id="mg" accept="application/pdf" multiple>
+<ul class="files" id="mgList"></ul>
+<button class="btn" id="mgBtn">এক ফাইলে জোড়া দিন</button>
+<div class="out" id="mgOut"></div>
+</section>
+
+<!-- EMI -->
+<section id="emi">
+<h2>লোন / EMI ক্যালকুলেটর</h2>
+<p class="sub">ব্যাংক লোনের মাসিক কিস্তি ও মোট সুদ জানুন।</p>
+<label for="amt">লোনের পরিমাণ (টাকা)</label>
+<input type="number" id="amt" min="1" placeholder="যেমন: 500000">
+<div class="row">
+<div><label for="rate">বাৎসরিক সুদের হার (%)</label><input type="number" id="rate" min="0" step="0.01" placeholder="যেমন: 12"></div>
+<div><label for="mon">মেয়াদ (মাস)</label><input type="number" id="mon" min="1" placeholder="যেমন: 36"></div>
+</div>
+<button class="btn" id="emiBtn">কিস্তি হিসাব করুন</button>
+<div class="out" id="emiOut"></div>
+</section>
+
+
+<section id="stamp">
+<h2>ছবিতে নাম ও তারিখ বসানো</h2>
+<p class="sub">সরকারি চাকরির ফর্মে ছবির নিচে নাম ও তারিখ লাগে। এখানেই বানিয়ে নিন।</p>
+<label for="stFile">ছবি বাছাই করুন</label><input type="file" id="stFile" accept="image/*">
+<div class="note" id="stInfo"></div>
+<label for="stName">নাম (ছবির নিচে যা লেখা হবে)</label><input id="stName" placeholder="যেমন: Md. Rahim Uddin">
+<label for="stDate">তারিখ</label><input type="date" id="stDate">
+<div class="row3">
+<div><label for="stW">প্রস্থ (px)</label><input type="number" id="stW" value="300"></div>
+<div><label for="stH">ছবির উচ্চতা</label><input type="number" id="stH" value="300"></div>
+<div><label for="stS">লেখার জায়গা</label><input type="number" id="stS" value="60"></div>
+</div>
+<label for="stKB">সর্বোচ্চ ফাইল সাইজ (KB) – ফাঁকা রাখলে সাধারণ কোয়ালিটি</label>
+<input type="number" id="stKB" min="5" placeholder="যেমন: 100">
+<button class="btn" id="stBtn">ছবি তৈরি করুন</button>
+<div class="out" id="stOut"></div>
+</section>
+
+<section id="pdfc">
+<h2>PDF সাইজ কমানো</h2>
+<p class="sub">আবেদনে PDF-এর সাইজ সীমা থাকলে এখানে ছোট করুন।</p>
+<label for="pcFile">PDF বাছাই করুন</label><input type="file" id="pcFile" accept="application/pdf">
+<label for="pcLvl">কতটা ছোট করবেন</label>
+<select id="pcLvl"><option value="0">ভালো মান (সামান্য ছোট)</option><option value="1" selected>মাঝারি</option><option value="2">ছোট সাইজ</option><option value="3">সবচেয়ে ছোট</option></select>
+<label for="pcKB">সর্বোচ্চ সাইজ (KB) – দিলে নিজে থেকে ছোট করে সেই সীমায় আনবে</label>
+<input type="number" id="pcKB" min="20" placeholder="যেমন: 300">
+<button class="btn" id="pcBtn">সাইজ কমান</button>
+<div class="out" id="pcOut"></div>
+<div class="note">প্রতিটি পেজ ছবিতে রূপান্তর হয়, তাই ফাইলের লেখা সিলেক্ট বা কপি করা যাবে না। আবেদন বা জমা দেওয়ার জন্য এটা সমস্যা নয়। সর্বোচ্চ ৪০ পেজ।</div>
+</section>
+
+<section id="cv">
+<h2>CV / বায়োডাটা বানান</h2>
+<p class="sub">ফর্ম পূরণ করুন, PDF পেয়ে যাবেন। যে ঘরে প্রযোজ্য নয় সেটা ফাঁকা রাখুন।</p>
+<label for="cvLg">শিরোনামের ভাষা</label>
+<select id="cvLg"><option value="en">English (Education, Experience…)</option><option value="bn">বাংলা (শিক্ষাগত যোগ্যতা, অভিজ্ঞতা…)</option></select>
+<label for="cvName">পূর্ণ নাম *</label><input id="cvName">
+<div class="row">
+<div><label for="cvPhone">মোবাইল</label><input id="cvPhone" type="tel"></div>
+<div><label for="cvEmail">ইমেইল</label><input id="cvEmail" type="email"></div>
+</div>
+<label for="cvAddr">ঠিকানা</label><input id="cvAddr">
+<label for="cvPhoto">ছবি (ঐচ্ছিক)</label><input type="file" id="cvPhoto" accept="image/*">
+<h3>ব্যক্তিগত তথ্য</h3>
+<div class="row">
+<div><label for="cvF">পিতার নাম</label><input id="cvF"></div>
+<div><label for="cvMo">মাতার নাম</label><input id="cvMo"></div>
+<div><label for="cvD">জন্ম তারিখ</label><input id="cvD" placeholder="যেমন: 15 March 2000"></div>
+<div><label for="cvN">জাতীয়তা</label><input id="cvN" value="Bangladeshi"></div>
+<div><label for="cvR">ধর্ম</label><input id="cvR"></div>
+<div><label for="cvMs">বৈবাহিক অবস্থা</label><input id="cvMs" placeholder="Single / Married"></div>
+</div>
+<h3>বিস্তারিত (প্রতি লাইনে একটি করে লিখুন)</h3>
+<label for="cvObj">ক্যারিয়ার উদ্দেশ্য</label><textarea id="cvObj"></textarea>
+<label for="cvEdu">শিক্ষাগত যোগ্যতা</label><textarea id="cvEdu" placeholder="B.Sc in CSE, Dhaka University, 2022, CGPA 3.50&#10;HSC, Dhaka College, 2017, GPA 5.00"></textarea>
+<label for="cvExp">অভিজ্ঞতা</label><textarea id="cvExp"></textarea>
+<label for="cvSk">দক্ষতা</label><textarea id="cvSk"></textarea>
+<label for="cvLn">ভাষা</label><textarea id="cvLn" placeholder="Bangla (Native)&#10;English (Good)"></textarea>
+<label for="cvOt">অন্যান্য তথ্য</label><textarea id="cvOt"></textarea>
+<button class="btn" id="cvBtn">CV PDF বানান</button>
+<div class="out" id="cvOut"></div>
+</section>
+
+<section id="land">
+<h2>জমির একক কনভার্টার</h2>
+<p class="sub">শতক, কাঠা, বিঘা, একর ও বর্গফুটের হিসাব এক জায়গায়।</p>
+<div class="row">
+<div><label for="lnV">পরিমাণ</label><input id="lnV" inputmode="decimal" placeholder="যেমন: 5"></div>
+<div><label for="lnU">একক</label><select id="lnU"></select></div>
+</div>
+<button class="btn" id="lnBtn">হিসাব করুন</button>
+<div class="out" id="lnOut"></div>
+<div class="note">হিসাবে ধরা হয়েছে: ১ শতক = ৪৩৫.৬ বর্গফুট, ১ কাঠা = ৭২০ বর্গফুট, ১ বিঘা = ২০ কাঠা। কাঠা ও বিঘার মাপ এলাকাভেদে আলাদা হতে পারে, তাই দলিল বা স্থানীয় জরিপের মাপ মিলিয়ে নিন।</div>
+</section>
+
+<section id="words">
+<h2>টাকার অঙ্ক থেকে কথায়</h2>
+<p class="sub">চেক, ভাউচার বা আবেদনে টাকার অঙ্ক বাংলা কথায় লিখুন।</p>
+<label for="wdV">টাকার অঙ্ক (বাংলা বা ইংরেজি সংখ্যায়)</label>
+<input id="wdV" inputmode="decimal" placeholder="যেমন: 12345 বা ১২৩৪৫.৫০">
+<button class="btn" id="wdBtn">কথায় লিখুন</button>
+<div class="out" id="wdOut"></div>
+</section>
+
+<section id="qr">
+<h2>QR কোড জেনারেটর</h2>
+<p class="sub">লিংক, লেখা বা ফোন নম্বরের QR কোড বানিয়ে ছবি হিসেবে নামান।</p>
+<label for="qrText">লিংক বা লেখা</label><textarea id="qrText" placeholder="যেমন: https://t.me/govement_jobs"></textarea>
+<label for="qrSize">ছবির মাপ</label>
+<select id="qrSize"><option value="300">ছোট (৩০০ px)</option><option value="500" selected>মাঝারি (৫০০ px)</option><option value="1000">বড় (১০০০ px)</option></select>
+<button class="btn" id="qrBtn">QR কোড বানান</button>
+<div class="out" id="qrOut"></div>
+</section>
+
+<div class="tg"><a class="btn alt" href="https://t.me/govement_jobs" target="_blank" rel="noopener">টেলিগ্রাম চ্যানেলে জয়েন করুন</a></div>
+</main>
+<div id="toast" role="status"></div>
+<footer>© সর্বস্বত্ব সংরক্ষিত – Developer Sabbir<br>যোগাযোগ: <a href="mailto:rightwaybangla885@gmail.com" style="color:inherit">rightwaybangla885@gmail.com</a></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const bn=(n,d=0)=>Number(n).toLocaleString('bn-BD',{maximumFractionDigits:d});
+const kbf=b=>bn(b/1024,1)+' KB';
+const show=(id,html,err)=>{const o=$(id);o.className='out on'+(err?' err':'');o.innerHTML=html};
+const save=(blob,name)=>{if(isMini())return sendToBot(blob,name);const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()};
+const readURL=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+const loadImg=async f=>{
+  if(window.createImageBitmap){try{return await createImageBitmap(f)}catch(e){}}
+  const u=await readURL(f);
+  return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=u});
+};
+
+/* ট্যাব */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+});
+
+/* বয়স */
+const today=new Date().toISOString().slice(0,10);
+$('asof').value=today;$('dob').max=today;
+$('ageBtn').onclick=()=>{
+  const d=$('dob').value,a=$('asof').value;
+  if(!d||!a)return show('ageOut','জন্ম তারিখ ও হিসাবের তারিখ দুটোই দিন।',1);
+  const s=new Date(d),e=new Date(a);
+  if(e<s)return show('ageOut','হিসাবের তারিখ জন্ম তারিখের পরে হতে হবে।',1);
+  let y=e.getFullYear()-s.getFullYear(),m=e.getMonth()-s.getMonth(),dd=e.getDate()-s.getDate();
+  if(dd<0){m--;dd+=new Date(e.getFullYear(),e.getMonth(),0).getDate()}
+  if(m<0){y--;m+=12}
+  const days=Math.floor((e-s)/864e5);
+  show('ageOut',`<div class="big">${bn(y)} বছর ${bn(m)} মাস ${bn(dd)} দিন</div>
+  <div class="kv"><span>মোট দিন</span><b>${bn(days)}</b></div>
+  <div class="kv"><span>মোট মাস (প্রায়)</span><b>${bn(y*12+m)}</b></div>`);
+};
+
+/* ছবি রিসাইজ */
+let src=null,srcSize=0;
+$('preset').onchange=e=>{if(e.target.value!=='custom'){const [w,h]=e.target.value.split(',');$('rw').value=w;$('rh').value=h}};
+$('rzFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{src=await loadImg(f);srcSize=f.size;$('rzInfo').textContent=`মূল ছবি: ${bn(src.width)}×${bn(src.height)} px, ${kbf(f.size)}`}
+  catch{src=null;$('rzInfo').textContent='ছবিটি পড়া যায়নি, অন্য ছবি দিন।'}
+};
+const toBlob=(c,q)=>new Promise(r=>c.toBlob(r,'image/jpeg',q));
+$('rzBtn').onclick=async()=>{
+  if(!src)return show('rzOut','আগে একটি ছবি বাছাই করুন।',1);
+  let w=+$('rw').value,h=+$('rh').value;
+  if(!w||!h)return show('rzOut','প্রস্থ ও উচ্চতা দিন।',1);
+  try{
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);
+  const sc=Math.max(w/src.width,h/src.height),sw=w/sc,sh=h/sc;
+  x.drawImage(src,(src.width-sw)/2,(src.height-sh)/2,sw,sh,0,0,w,h);
+  const max=+$('kb').value*1024;let q=.92,blob=await toBlob(c,q);
+  if(max){let lo=.05,hi=.95;for(let i=0;i<9;i++){q=(lo+hi)/2;blob=await toBlob(c,q);blob.size>max?hi=q:lo=q}
+    blob=await toBlob(c,lo)}
+  const url=await readURL(blob);
+  const miss=max&&blob.size>max?`<div class="note err">${kbf(max)} এর মধ্যে আনা যায়নি। মাপ (px) কমিয়ে আবার চেষ্টা করুন।</div>`:'';
+  show('rzOut',`<div class="big">${bn(w)}×${bn(h)} px, ${kbf(blob.size)}</div><img class="prev" src="${url}" alt="ফলাফল"><br>
+  <a class="btn" href="${url}" download="resized.jpg">ছবি ডাউনলোড করুন</a>${miss}`);
+  }catch(e){show('rzOut','ছবি তৈরি করা যায়নি। মাপ ঠিক আছে কিনা দেখুন।',1)}
+};
+
+/* ছবি → PDF */
+const listNames=(inp,ul)=>{ul.innerHTML=[...inp.files].map(f=>`<li>${f.name}</li>`).join('')};
+$('i2p').onchange=()=>listNames($('i2p'),$('i2pList'));
+$('mg').onchange=()=>listNames($('mg'),$('mgList'));
+const ENC=new TextEncoder();
+function buildPDF(pages,exact){
+  const parts=[],offs=[];let off=0;
+  const push=d=>{const u=typeof d==='string'?ENC.encode(d):d;parts.push(u);off+=u.length};
+  const PW=595,PH=842,M=28,N=2+pages.length*3;
+  push('%PDF-1.4\n');
+  offs[1]=off;push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  offs[2]=off;push('2 0 obj\n<< /Type /Pages /Count '+pages.length+' /Kids ['+pages.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] >>\nendobj\n');
+  pages.forEach((p,i)=>{
+    const pn=3+i*3,cn=pn+1,im=pn+2;
+    const pw=PW,ph=exact?Math.round(PW*p.h/p.w):PH,mm=exact?0:M;const r=Math.min((pw-2*mm)/p.w,(ph-2*mm)/p.h),w=p.w*r,h=p.h*r,x=(pw-w)/2,y=(ph-h)/2;
+    const cs=`q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
+    offs[pn]=off;push(`${pn} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${cn} 0 R >>\nendobj\n`);
+    offs[cn]=off;push(`${cn} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+    offs[im]=off;push(`${im} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${p.w} /Height ${p.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpg.length} >>\nstream\n`);
+    push(p.jpg);push('\nendstream\nendobj\n');
+  });
+  const xr=off;let t=`xref\n0 ${N+1}\n0000000000 65535 f \n`;
+  for(let n=1;n<=N;n++)t+=String(offs[n]).padStart(10,'0')+' 00000 n \n';
+  push(t+`trailer\n<< /Size ${N+1} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+  return new Blob(parts,{type:'application/pdf'});
+}
+$('i2pBtn').onclick=async()=>{
+  const fs=[...$('i2p').files];
+  if(!fs.length)return show('i2pOut','কমপক্ষে একটি ছবি বাছাই করুন।',1);
+  show('i2pOut','তৈরি হচ্ছে, একটু অপেক্ষা করুন...');
+  try{
+    const pages=[];
+    for(const f of fs){
+      const im=await loadImg(f),k=Math.min(1,2200/Math.max(im.width,im.height));
+      const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+      const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+      const bl=await toBlob(c,.9);
+      pages.push({jpg:new Uint8Array(await bl.arrayBuffer()),w:c.width,h:c.height});
+    }
+    const blob=buildPDF(pages);
+    show('i2pOut',`<div class="big">${bn(fs.length)} পেজের PDF তৈরি (${kbf(blob.size)})</div><a class="btn" id="dl1">PDF ডাউনলোড করুন</a>`);
+    $('dl1').onclick=()=>save(blob,'images.pdf');
+  }catch(e){show('i2pOut','PDF বানানো যায়নি। JPG বা PNG ছবি দিয়ে চেষ্টা করুন। (HEIC সাপোর্ট করে না)',1)}
+};
+
+/* PDF মার্জ লাইব্রেরি: দরকার হলে একাধিক সোর্স থেকে লোড */
+const LIBS=['https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js','https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'];
+const tryLoad=u=>new Promise(r=>{const s=document.createElement('script');const t=setTimeout(()=>r(false),12000);s.onload=()=>{clearTimeout(t);r(!!window.PDFLib)};s.onerror=()=>{clearTimeout(t);r(false)};s.src=u;document.head.appendChild(s)});
+async function ensureLib(){if(window.PDFLib)return true;for(const u of LIBS){if(await tryLoad(u))return true}return false}
+
+/* PDF মার্জ */
+$('mgBtn').onclick=async()=>{
+  const fs=[...$('mg').files];
+  if(fs.length<2)return show('mgOut','কমপক্ষে ২টি PDF বাছাই করুন।',1);
+  show('mgOut','জোড়া দেওয়া হচ্ছে, একটু অপেক্ষা করুন...');
+  try{
+    if(!(await ensureLib()))return show('mgOut','মার্জ টুলের লাইব্রেরি লোড হয়নি। ইন্টারনেট ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।',1);
+    const out=await PDFLib.PDFDocument.create();
+    for(const f of fs){
+      const d=await PDFLib.PDFDocument.load(await f.arrayBuffer());
+      (await out.copyPages(d,d.getPageIndices())).forEach(p=>out.addPage(p));
+    }
+    const blob=new Blob([await out.save()],{type:'application/pdf'});
+    show('mgOut',`<div class="big">${bn(out.getPageCount())} পেজের PDF তৈরি (${kbf(blob.size)})</div><a class="btn" id="dl2">PDF ডাউনলোড করুন</a>`);
+    $('dl2').onclick=()=>save(blob,'merged.pdf');
+  }catch{show('mgOut','কোনো একটি PDF পড়া যায়নি (পাসওয়ার্ড দেওয়া বা নষ্ট হতে পারে)।',1)}
+};
+
+/* EMI */
+$('emiBtn').onclick=()=>{
+  const P=+$('amt').value,n=+$('mon').value,ar=+$('rate').value;
+  if(!P||!n||$('rate').value==='')return show('emiOut','লোনের পরিমাণ, সুদের হার ও মেয়াদ তিনটিই দিন।',1);
+  const r=ar/1200,emi=r?P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):P/n,tot=emi*n;
+  show('emiOut',`<div class="big">মাসিক কিস্তি: ${bn(emi)} টাকা</div>
+  <div class="kv"><span>মোট সুদ</span><b>${bn(tot-P)} টাকা</b></div>
+  <div class="kv"><span>মোট পরিশোধ</span><b>${bn(tot)} টাকা</b></div>
+  <div class="note">এটি কমে যাওয়া ব্যালেন্স পদ্ধতির আনুমানিক হিসাব। ব্যাংকের চার্জ ও ফি আলাদা।</div>`);
+};
+
+/* ===== ট্যাব লিংক (#cv ইত্যাদি) ===== */
+function openTab(t){document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t));document.querySelectorAll('section').forEach(z=>z.classList.toggle('on',z.id===t))}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{try{history.replaceState(null,'','#'+b.dataset.t)}catch(e){}}));
+if(/^#\w+$/.test(location.hash)&&document.querySelector('section'+location.hash))openTab(location.hash.slice(1));
+
+/* ===== সাধারণ সহায়ক ===== */
+const en=t=>t.replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/,/g,'').trim();
+const loadLib=(u,test)=>new Promise(r=>{const e=document.createElement('script');const t=setTimeout(()=>r(false),15000);e.onload=()=>{clearTimeout(t);r(!!test())};e.onerror=()=>{clearTimeout(t);r(false)};e.src=u;document.head.appendChild(e)});
+async function encodeKB(c,maxKB){
+  if(!maxKB)return toBlob(c,.92);
+  const max=maxKB*1024;let lo=.05,hi=.95;
+  for(let i=0;i<9;i++){const q=(lo+hi)/2;const b=await toBlob(c,q);b.size>max?hi=q:lo=q}
+  return toBlob(c,lo);
+}
+async function imgOut(id,blob,dim,name,extra){
+  const u=await readURL(blob);
+  show(id,`<div class="big">${dim}, ${kbf(blob.size)}</div><img class="prev" src="${u}" alt="ফলাফল"><br><a class="btn" href="${u}" download="${name}">ছবি ডাউনলোড করুন</a>${extra||''}`);
+}
+
+/* ===== ছবিতে নাম-তারিখ ===== */
+let stImg=null;
+$('stDate').value=today;
+$('stFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{stImg=await loadImg(f);$('stInfo').textContent=`মূল ছবি: ${bn(stImg.width)}×${bn(stImg.height)} px`}
+  catch{stImg=null;$('stInfo').textContent='ছবিটি পড়া যায়নি, অন্য ছবি দিন।'}
+};
+$('stBtn').onclick=async()=>{
+  if(!stImg)return show('stOut','আগে একটি ছবি বাছাই করুন।',1);
+  const name=$('stName').value.trim(),d=$('stDate').value;
+  const pw=+$('stW').value,ph=+$('stH').value,sh=+$('stS').value;
+  if(!name||!d)return show('stOut','নাম ও তারিখ দিন।',1);
+  if(!pw||!ph||!sh)return show('stOut','মাপগুলো দিন।',1);
+  try{
+    const c=document.createElement('canvas');c.width=pw;c.height=ph+sh;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,pw,ph+sh);
+    const sc=Math.max(pw/stImg.width,ph/stImg.height),sw=pw/sc,shh=ph/sc;
+    x.drawImage(stImg,(stImg.width-sw)/2,(stImg.height-shh)/2,sw,shh,0,0,pw,ph);
+    const [Y,Mo,D]=d.split('-'),lines=[name,`Date: ${D}/${Mo}/${Y}`];
+    let fs=Math.floor(sh/2.7);
+    x.textAlign='center';x.textBaseline='middle';x.fillStyle='#000';
+    const fnt=n=>`700 ${n}px "Noto Sans Bengali","Nirmala UI",Arial,sans-serif`;
+    x.font=fnt(fs);
+    while(fs>8&&lines.some(t=>x.measureText(t).width>pw-8)){fs--;x.font=fnt(fs)}
+    x.fillText(lines[0],pw/2,ph+sh*.3);x.fillText(lines[1],pw/2,ph+sh*.72);
+    const blob=await encodeKB(c,+$('stKB').value);
+    await imgOut('stOut',blob,`${bn(pw)}×${bn(ph+sh)} px`,'photo-with-name.jpg');
+  }catch(e){show('stOut','ছবি তৈরি করা যায়নি। মাপ ঠিক আছে কিনা দেখুন।',1)}
+};
+
+/* ===== PDF সাইজ কমানো (pdf.js দরকার হলে লোড হয়) ===== */
+const PJ=['https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'];
+const WK=['https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
+async function ensurePdfJs(){
+  if(window.pdfjsLib&&pdfjsLib.GlobalWorkerOptions.workerSrc)return true;
+  for(let i=0;i<PJ.length;i++){
+    if(!window.pdfjsLib&&!(await loadLib(PJ[i],()=>window.pdfjsLib)))continue;
+    try{const t=await (await fetch(WK[i])).text();pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([t],{type:'text/javascript'}));return true}catch(e){}
+  }
+  return false;
+}
+const PRE=[{s:1.6,q:.7},{s:1.3,q:.55},{s:1.1,q:.42},{s:.9,q:.3},{s:.75,q:.22}];
+$('pcBtn').onclick=async()=>{
+  const f=$('pcFile').files[0];
+  if(!f)return show('pcOut','আগে একটি PDF বাছাই করুন।',1);
+  show('pcOut','লাইব্রেরি লোড হচ্ছে...');
+  try{
+    if(!(await ensurePdfJs()))return show('pcOut','PDF টুল লোড হয়নি। ইন্টারনেট ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।',1);
+    const doc=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+    const n=Math.min(doc.numPages,40),target=(+$('pcKB').value)*1024;
+    let blob;
+    for(let i=+$('pcLvl').value;i<PRE.length;i++){
+      const pages=[];
+      for(let p=1;p<=n;p++){
+        show('pcOut',`প্রসেস হচ্ছে... পেজ ${bn(p)}/${bn(n)} (ধাপ ${bn(i+1)})`);
+        const pg=await doc.getPage(p),vp=pg.getViewport({scale:PRE[i].s});
+        const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);
+        const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+        await pg.render({canvasContext:x,viewport:vp}).promise;
+        const b=await toBlob(c,PRE[i].q);
+        pages.push({jpg:new Uint8Array(await b.arrayBuffer()),w:c.width,h:c.height});
+      }
+      blob=buildPDF(pages,true);
+      if(!target||blob.size<=target)break;
+    }
+    const miss=target&&blob.size>target?`<div class="note err">${kbf(target)} এর মধ্যে আনা যায়নি। পেজ কমিয়ে বা অন্য ফাইল দিয়ে চেষ্টা করুন।</div>`:'';
+    const big=blob.size>=f.size?`<div class="note err">ফাইলটি আগে থেকেই ছোট ছিল। মূল ফাইলই ব্যবহার করুন।</div>`:'';
+    show('pcOut',`<div class="big">${kbf(f.size)} → ${kbf(blob.size)}</div><a class="btn" id="dlPc">PDF ডাউনলোড করুন</a>${miss}${big}`);
+    $('dlPc').onclick=()=>save(blob,'compressed.pdf');
+  }catch(e){show('pcOut','PDF পড়া যায়নি। ফাইলে পাসওয়ার্ড দেওয়া বা ফাইল নষ্ট হতে পারে।',1)}
+};
+
+/* ===== CV বানানো ===== */
+const FF='"Noto Sans Bengali","Nirmala UI","Siyam Rupali",Kalpurush,Arial,sans-serif',GR='#0b6b4f';
+const CVL={
+ en:{pers:'Personal Details',obj:'Career Objective',edu:'Education',exp:'Experience',sk:'Skills',ln:'Languages',ot:'Other Information',f:"Father's Name",m:"Mother's Name",d:'Date of Birth',n:'Nationality',r:'Religion',ms:'Marital Status',ph:'Phone',em:'Email',ad:'Address'},
+ bn:{pers:'ব্যক্তিগত তথ্য',obj:'ক্যারিয়ার উদ্দেশ্য',edu:'শিক্ষাগত যোগ্যতা',exp:'অভিজ্ঞতা',sk:'দক্ষতা',ln:'ভাষা',ot:'অন্যান্য তথ্য',f:'পিতার নাম',m:'মাতার নাম',d:'জন্ম তারিখ',n:'জাতীয়তা',r:'ধর্ম',ms:'বৈবাহিক অবস্থা',ph:'ফোন',em:'ইমেইল',ad:'ঠিকানা'}};
+let cvPh=null;
+$('cvPhoto').onchange=async e=>{cvPh=null;const f=e.target.files[0];if(f){try{cvPh=await loadImg(f)}catch(err){}}};
+$('cvBtn').onclick=async()=>{
+  const g=id=>$(id).value.trim();
+  if(!g('cvName'))return show('cvOut','আপনার নাম লিখুন।',1);
+  show('cvOut','CV তৈরি হচ্ছে...');
+  try{
+    const L=CVL[$('cvLg').value],W=1240,H=1754,M=90,cs=[];let c,x,y;
+    const np=()=>{c=document.createElement('canvas');c.width=W;c.height=H;x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.textBaseline='top';cs.push(c);y=M};
+    const wrap=(t,mw)=>{const out=[];for(const p of t.split('\n')){let l='';for(const w of p.split(' ')){const tt=l?l+' '+w:w;if(x.measureText(tt).width>mw&&l){out.push(l);l=w}else l=tt}out.push(l)}return out};
+    const para=(t,o={})=>{const s=o.size||28,f=`${o.bold?'700 ':''}${s}px ${FF}`,lh=s*1.55;x.font=f;
+      for(const ln of wrap(t,o.w||W-2*M)){if(y+lh>H-M){np();x.font=f}x.fillStyle=o.color||'#111';x.fillText(ln,M,y);y+=lh}};
+    const head=t=>{y+=16;if(y+100>H-M)np();x.font=`700 32px ${FF}`;x.fillStyle=GR;x.fillText(t,M,y);y+=48;x.fillRect(M,y,W-2*M,3);y+=18};
+    const list=(t,ttl)=>{const a=t.split('\n').map(z=>z.trim()).filter(Boolean);if(!a.length)return;head(ttl);a.forEach(z=>para('•  '+z))};
+    const row=(k,v)=>{if(!v)return;const lh=44;x.font=`28px ${FF}`;const ls=wrap(v,W-2*M-340);
+      ls.forEach((ln,i)=>{if(y+lh>H-M)np();x.fillStyle='#111';if(i==0){x.font=`700 28px ${FF}`;x.fillText(k,M,y)}x.font=`28px ${FF}`;x.fillText(ln,M+340,y);y+=lh})};
+    np();
+    const hw=cvPh?W-2*M-240:W-2*M;
+    para(g('cvName'),{size:56,bold:1,w:hw});
+    [g('cvPhone')&&`${L.ph}: ${g('cvPhone')}`,g('cvEmail')&&`${L.em}: ${g('cvEmail')}`,g('cvAddr')&&`${L.ad}: ${g('cvAddr')}`].filter(Boolean).forEach(t=>para(t,{w:hw}));
+    if(cvPh){const px=W-M-200,pw=200,ph=250,sc=Math.max(pw/cvPh.width,ph/cvPh.height),sw=pw/sc,sh=ph/sc;
+      x.drawImage(cvPh,(cvPh.width-sw)/2,(cvPh.height-sh)/2,sw,sh,px,M,pw,ph);x.strokeStyle='#999';x.lineWidth=2;x.strokeRect(px,M,pw,ph);y=Math.max(y,M+ph+20)}
+    const rows=[[L.f,g('cvF')],[L.m,g('cvMo')],[L.d,g('cvD')],[L.n,g('cvN')],[L.r,g('cvR')],[L.ms,g('cvMs')]];
+    if(rows.some(r=>r[1])){head(L.pers);rows.forEach(r=>row(r[0],r[1]))}
+    if(g('cvObj')){head(L.obj);para(g('cvObj'))}
+    list(g('cvEdu'),L.edu);list(g('cvExp'),L.exp);list(g('cvSk'),L.sk);list(g('cvLn'),L.ln);list(g('cvOt'),L.ot);
+    const pages=[];
+    for(const cv of cs){const b=await toBlob(cv,.92);pages.push({jpg:new Uint8Array(await b.arrayBuffer()),w:W,h:H})}
+    const blob=buildPDF(pages,true),pv=cs[0].toDataURL('image/jpeg',.6);
+    show('cvOut',`<div class="big">CV তৈরি (${bn(pages.length)} পেজ, ${kbf(blob.size)})</div><img class="prev" src="${pv}" alt="CV প্রিভিউ"><br><a class="btn" id="dlCv">PDF ডাউনলোড করুন</a>`);
+    $('dlCv').onclick=()=>save(blob,'CV.pdf');
+  }catch(e){show('cvOut','CV বানানো যায়নি। ছবি ছাড়া আবার চেষ্টা করুন।',1)}
+};
+
+/* ===== জমির একক ===== */
+const LU=[['শতক',435.6],['কাঠা',720],['বিঘা',14400],['একর',43560],['ছটাক',45],['বর্গফুট',1],['বর্গগজ',9],['বর্গমিটার',10.7639104]];
+$('lnU').innerHTML=LU.map((u,i)=>`<option value="${i}">${u[0]}</option>`).join('');
+$('lnBtn').onclick=()=>{
+  const v=parseFloat(en($('lnV').value));
+  if(!(v>=0))return show('lnOut','সঠিক পরিমাণ লিখুন।',1);
+  const sq=v*LU[$('lnU').value][1];
+  show('lnOut',LU.map(u=>`<div class="kv"><span>${u[0]}</span><b>${bn(sq/u[1],4)}</b></div>`).join(''));
+};
+
+/* ===== টাকা কথায় ===== */
+const W99='শূন্য,এক,দুই,তিন,চার,পাঁচ,ছয়,সাত,আট,নয়,দশ,এগারো,বারো,তেরো,চৌদ্দ,পনেরো,ষোল,সতেরো,আঠারো,উনিশ,বিশ,একুশ,বাইশ,তেইশ,চব্বিশ,পঁচিশ,ছাব্বিশ,সাতাশ,আটাশ,ঊনত্রিশ,ত্রিশ,একত্রিশ,বত্রিশ,তেত্রিশ,চৌত্রিশ,পঁয়ত্রিশ,ছত্রিশ,সাঁইত্রিশ,আটত্রিশ,ঊনচল্লিশ,চল্লিশ,একচল্লিশ,বিয়াল্লিশ,তেতাল্লিশ,চুয়াল্লিশ,পঁয়তাল্লিশ,ছেচল্লিশ,সাতচল্লিশ,আটচল্লিশ,ঊনপঞ্চাশ,পঞ্চাশ,একান্ন,বাহান্ন,তিপ্পান্ন,চুয়ান্ন,পঞ্চান্ন,ছাপ্পান্ন,সাতান্ন,আটান্ন,ঊনষাট,ষাট,একষট্টি,বাষট্টি,তেষট্টি,চৌষট্টি,পঁয়ষট্টি,ছেষট্টি,সাতষট্টি,আটষট্টি,ঊনসত্তর,সত্তর,একাত্তর,বাহাত্তর,তিয়াত্তর,চুয়াত্তর,পঁচাত্তর,ছিয়াত্তর,সাতাত্তর,আটাত্তর,ঊনআশি,আশি,একাশি,বিরাশি,তিরাশি,চুরাশি,পঁচাশি,ছিয়াশি,সাতাশি,আটাশি,ঊননব্বই,নব্বই,একানব্বই,বিরানব্বই,তিরানব্বই,চুরানব্বই,পঁচানব্বই,ছিয়ানব্বই,সাতানব্বই,আটানব্বই,নিরানব্বই'.split(',');
+function nw(n){
+  if(!n)return '';
+  const cr=Math.floor(n/1e7);let r=n%1e7;const la=Math.floor(r/1e5);r%=1e5;const th=Math.floor(r/1e3);r%=1e3;const hu=Math.floor(r/100),rs=r%100,p=[];
+  if(cr)p.push(nw(cr)+' কোটি');if(la)p.push(W99[la]+' লাখ');if(th)p.push(W99[th]+' হাজার');if(hu)p.push(W99[hu]+'শত');if(rs)p.push(W99[rs]);
+  return p.join(' ');
+}
+$('wdBtn').onclick=()=>{
+  const m=en($('wdV').value).match(/^(\d{1,12})(?:\.(\d{1,2}))?$/);
+  if(!m)return show('wdOut','শুধু সংখ্যা লিখুন (সর্বোচ্চ ১২ অঙ্ক, পয়সা থাকলে দশমিকের পরে ২ অঙ্ক)।',1);
+  const I=+m[1],P=m[2]?+m[2].padEnd(2,'0'):0,a=[];
+  if(I)a.push(nw(I)+' টাকা');if(P)a.push(W99[P]+' পয়সা');if(!I&&!P)a.push('শূন্য টাকা');
+  const txt=a.join(' ')+' মাত্র';
+  show('wdOut',`<div class="big">${txt}</div><div class="note">সংখ্যা: ${bn(I)}${P?'.'+String(P).padStart(2,'0').replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]):''} টাকা</div><button class="btn alt" id="cpW">কপি করুন</button>`);
+  $('cpW').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('cpW').textContent='কপি হয়েছে'}catch(e){$('cpW').textContent='কপি করা যায়নি'}};
+};
+
+/* ===== QR কোড (লাইব্রেরি দরকার হলে লোড) ===== */
+const QRU=['https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js','https://unpkg.com/qrcode-generator@1.4.4/qrcode.js'];
+$('qrBtn').onclick=async()=>{
+  const t=$('qrText').value.trim();
+  if(!t)return show('qrOut','লিংক বা লেখা দিন।',1);
+  show('qrOut','তৈরি হচ্ছে...');
+  let ok=!!window.qrcode;
+  for(const u of QRU){if(ok)break;ok=await loadLib(u,()=>window.qrcode)}
+  if(!ok)return show('qrOut','QR টুল লোড হয়নি। ইন্টারনেট ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।',1);
+  try{
+    if(qrcode.stringToBytesFuncs&&qrcode.stringToBytesFuncs['UTF-8'])qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
+    const q=qrcode(0,'M');q.addData(t);q.make();
+    const n=q.getModuleCount(),size=+$('qrSize').value,mg=4,cell=Math.max(1,Math.floor(size/(n+2*mg))),dim=cell*(n+2*mg);
+    const c=document.createElement('canvas');c.width=c.height=dim;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,dim,dim);x.fillStyle='#000';
+    for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+mg)*cell,(r+mg)*cell,cell,cell);
+    const u=c.toDataURL('image/png');
+    show('qrOut',`<img class="prev" style="width:260px;max-width:100%" src="${u}" alt="QR কোড"><br><a class="btn" href="${u}" download="qrcode.png">QR ছবি ডাউনলোড করুন</a>`);
+  }catch(e){show('qrOut','লেখাটি বেশি বড়। ছোট করে আবার চেষ্টা করুন।',1)}
+};
+
+/* ===== টেলিগ্রাম: Mini App হলে ফাইল বটের চ্যাটে যায়, নইলে ব্রাউজারে খুলতে বলা ===== */
+const INIT=new URLSearchParams(location.hash.slice(1)).get('tgWebAppData')||'';
+const getInit=()=>(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||INIT;
+const isMini=()=>!!getInit();
+function inTelegram(){
+  const w=window,t=w.Telegram&&w.Telegram.WebApp;
+  return !!(w.TelegramWebviewProxy||w.TelegramWebview||(t&&t.platform&&t.platform!=='unknown')||/Telegram/i.test(navigator.userAgent));
+}
+function toast(m,keep){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);if(!keep)toast.h=setTimeout(()=>{t.style.display='none'},7000)}
+async function sendToBot(blob,name){
+  if(blob.size>4.3*1024*1024)return toast('❌ ফাইল ৪ MB এর বেশি, বটে পাঠানো যাবে না। KB কমিয়ে আবার বানান।');
+  toast('⏳ বটের চ্যাটে পাঠানো হচ্ছে...',true);
+  try{
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob)});
+    const r=await fetch('/.netlify/functions/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:getInit(),name,data:b64})});
+    const j=await r.json().catch(()=>({}));
+    toast(r.ok&&j.ok?'✅ ফাইল পাঠানো হয়েছে। বটের চ্যাটে গিয়ে দেখুন।':'❌ '+(j.error||'পাঠানো যায়নি, আবার চেষ্টা করুন।'));
+  }catch(e){toast('❌ ইন্টারনেট বা সার্ভারে সমস্যা, আবার চেষ্টা করুন।')}
+}
+document.addEventListener('click',async e=>{
+  const a=e.target.closest&&e.target.closest('a[download]');
+  if(!a||!isMini())return;
+  e.preventDefault();
+  try{sendToBot(await (await fetch(a.href)).blob(),a.download)}catch(err){toast('❌ ফাইল পাঠানো যায়নি')}
+});
+$('tgOpen').onclick=()=>{
+  const u=location.href.split('#')[0];
+  try{const t=window.Telegram&&Telegram.WebApp;if(t&&t.openLink){t.openLink(u,{try_browser:true});return}}catch(e){}
+  window.open(u,'_blank');
+};
+function checkTG(){
+  const bar=$('tgbar');
+  if(isMini()){
+    try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
+    bar.className='mini';bar.textContent='ডাউনলোড বাটনে চাপলে ফাইল এই বটের চ্যাটে পাঠানো হবে।';bar.style.display='block';
+  }else if(inTelegram())bar.style.display='block';
+}
+checkTG();setTimeout(checkTG,1500);
+</script>
+</body>
+</html>
